@@ -8,7 +8,12 @@
     VRAM_SEG equ 0xB800
     CENTER_X equ 40
     CENTER_Y equ 12
-    PAD_HEIGHT equ 5
+    PAD_HEIGHT equ 6
+
+
+    ; https://stanislavs.org/helppc/scan_codes.html
+    KBD_UP      equ 0x48
+    KBD_DOWN    equ 0x50
 ;-----------------------------------------------------------------------
 
 
@@ -50,7 +55,31 @@ game_loop:
 
 
 handle_input:
+    mov ah, 0x01
+    int 16h             
+    jz exit_handle_input    ; if no key pressed
     
+    cbw
+    int 16h
+    ; output scancode is written in ah
+
+    ;------------------------------------------
+    ; Up Arrow
+        cmp ah, KBD_UP                      ;
+        jne handle_down_arrow               ;
+            dec word [pad_pos + 2]          ; move player up
+            jmp exit_handle_input           ;
+    ;------------------------------------------
+
+    ;------------------------------------------
+    ; Down Arrow
+        handle_down_arrow:                      ;
+            cmp ah, KBD_DOWN                    ;
+                jne exit_handle_input           ;
+                inc word [pad_pos + 2]          ; move player up
+    ;------------------------------------------
+             
+
 
     exit_handle_input: ret
 
@@ -130,6 +159,7 @@ update_all:
         add [ball_pos], bl
         mov bl, [ball_vel + 1]
         add [ball_pos + 2], bl
+    ;------------------------------------------
 
     ;------------------------------------------
     ; AI game play
@@ -146,6 +176,8 @@ update_all:
                 jmp end_ai_move
             move_ai_down:
                 inc word [pad_pos]
+    ;------------------------------------------
+ 
     end_ai_move:
 
 
@@ -180,7 +212,8 @@ update_all:
                 jl end_pad_hit_check
                     neg byte [ball_vel]         ; flip velocity
         end_pad_hit_check:
-
+    ;------------------------------------------
+ 
 
 
 
@@ -218,6 +251,7 @@ update_all:
             jle end_bound_check
                 mov word [ball_pos + 2], ROWS
                 neg byte [ball_vel + 1]                 
+    ;------------------------------------------
     end_bound_check:
     
 
