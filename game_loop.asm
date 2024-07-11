@@ -1,18 +1,18 @@
 ;-[ CONSTANTS ]---------------------------------------------------------
-    TIMER equ 0x046C    ; Memory location of bios timer (ticks since boot)
-    COLS equ 80
-    ROWS equ 25
-    ROW_STRIDE equ COLS * 2
+    TIMER       equ 0x046C    ; Memory location of bios timer (ticks since boot)
+    COLS        equ 80
+    ROWS        equ 25
+    ROW_STRIDE  equ COLS * 2
 
     FILL_GRAPHIC_CHAR   equ 0xF020    ; BG = White    FG = BLACK  CHAR = space
     FILL_BALL_CHAR      equ 0xD020    ; BG = Magenta  FG = BLACK  CHAR = space
     FILL_HEALTH_CHAR    equ 0xC020    ; BG = Red      FG = BLACK  CHAR = space
     
-    VRAM_SEG equ 0xB800
-    CENTER_X equ 40
-    CENTER_Y equ 12
-    PAD_HEIGHT equ 6
-
+    VRAM_SEG    equ 0xB800
+    CENTER_X    equ 40
+    CENTER_Y    equ 12
+    PAD_HEIGHT  equ 6
+    WIN_SCORE   equ 6
 
     ; https://stanislavs.org/helppc/scan_codes.html
     KBD_UP      equ 0x48
@@ -29,15 +29,21 @@ game_loop:
         cmp byte [gameOver], 0x01
         je exit
 
-        ;----[ clear screen ]----------------
-        call clear_screen
-        ;-----------------------------------
 
+        call clear_screen
         call handle_input
         call update_all
         call draw_all
         
-
+        ;------------------------------------
+        ; check for game over
+            mov cx, 2
+            mov bx, [score]
+            check_score:
+                call update_game_over
+                add bx, 2
+            loop check_score
+        ;------------------------------------
 
 
 
@@ -52,6 +58,13 @@ game_loop:
 
 
 
+
+update_game_over:
+    cmp bx, WIN_SCORE
+    jne check_game_over_ret
+        mov byte [gameOver], 0x01
+    check_game_over_ret:
+    ret
 
 
 
@@ -126,7 +139,7 @@ draw_all:
         
 
         ;------------------------------------------
-        ; draw player
+        ; draw ai
             mov di, [pad_pos]    
             imul di, ROW_STRIDE
             call draw_paddle
@@ -134,7 +147,7 @@ draw_all:
 
 
         ;------------------------------------------
-        ; draw ai
+        ; draw player
             mov di, [pad_pos + 2]
             imul di, ROW_STRIDE
             add di, ROW_STRIDE - 2
@@ -144,33 +157,30 @@ draw_all:
 
         ;------------------------------------------
         ; draw score
+
+            ; TODO :  MOVE THIS IN FUNCTION
+
+
             ;------------------------------------------
             ; ENEMY SCORE
+
                 mov cx, word [score]
-                cmp cx, 0
-                je end_draw_enemy_score
                 mov di, COLS - 10
-                draw_score_enemy:
-                    mov word [es:di], FILL_HEALTH_CHAR
-                    add di, -8
-                    loop draw_score_enemy
+                mov ax, -8              ; direction
+                call draw_score
+
             ;------------------------------------------
-            end_draw_enemy_score:
 
             
             ;------------------------------------------
             ; PLAYER SCORE
                 mov cx, word [score + 2]
-                cmp cx, 0
-                je end_draw_score
                 mov di, COLS + 10
-                draw_score_player:
-                    mov word [es:di], FILL_HEALTH_CHAR
-                    add di, +8
-                    loop draw_score_player
+                mov ax, +8          ; direction
+                call draw_score 
+ 
             ;------------------------------------------            
         ;------------------------------------------
-        end_draw_score:
 
 
 
@@ -183,6 +193,19 @@ draw_all:
 
 
 
+
+
+
+draw_score:
+    cmp cx, 0
+    je end_draw_score
+    draw_score_loop:
+        mov word [es:di], FILL_HEALTH_CHAR
+        add di, ax
+        loop draw_score_loop
+
+    end_draw_score:
+    ret
 
 
 
@@ -209,7 +232,7 @@ update_all:
 
     ;------------------------------------------
     ; AI game play
-        cmp word [ball_pos], 2 * COLS / 5   ; move only if ball is in our area?
+        cmp word [ball_pos], COLS / 20   ; move only if ball is in our area?
         jg end_ai_move
         cmp byte [ball_vel], 0          ; move only if ball is comming to us
         jg end_ai_move
