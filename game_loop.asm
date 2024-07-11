@@ -3,8 +3,11 @@
     COLS equ 80
     ROWS equ 25
     ROW_STRIDE equ COLS * 2
-    FILL_GRAPHIC_CHAR equ 0xF020    ; BG = White    CHAR = space
-    FILL_BALL_CHAR equ 0xD020       ; BG = Magenta  CHAR = space
+
+    FILL_GRAPHIC_CHAR   equ 0xF020    ; BG = White    FG = BLACK  CHAR = space
+    FILL_BALL_CHAR      equ 0xD020    ; BG = Magenta  FG = BLACK  CHAR = space
+    FILL_HEALTH_CHAR    equ 0xC020    ; BG = Red      FG = BLACK  CHAR = space
+    
     VRAM_SEG equ 0xB800
     CENTER_X equ 40
     CENTER_Y equ 12
@@ -138,7 +141,40 @@ draw_all:
             call draw_paddle
         ;------------------------------------------
 
-        ; TODO : Print Score?
+
+        ;------------------------------------------
+        ; draw score
+            ;------------------------------------------
+            ; ENEMY SCORE
+                mov cx, word [score]
+                cmp cx, 0
+                je end_draw_enemy_score
+                mov di, COLS - 10
+                draw_score_enemy:
+                    mov word [es:di], FILL_HEALTH_CHAR
+                    add di, -8
+                    loop draw_score_enemy
+            ;------------------------------------------
+            end_draw_enemy_score:
+
+            
+            ;------------------------------------------
+            ; PLAYER SCORE
+                mov cx, word [score + 2]
+                cmp cx, 0
+                je end_draw_score
+                mov di, COLS + 10
+                draw_score_player:
+                    mov word [es:di], FILL_HEALTH_CHAR
+                    add di, +8
+                    loop draw_score_player
+            ;------------------------------------------            
+        ;------------------------------------------
+        end_draw_score:
+
+
+
+
         ; TODO : Win / LOSS?
 
     popa
@@ -164,7 +200,7 @@ draw_paddle:
 
 update_all:
     ;------------------------------------------
-    ; update ball
+    ; update ball (pos += velocity)
         mov bl, [ball_vel]
         add [ball_pos], bl
         mov bl, [ball_vel + 1]
@@ -231,22 +267,22 @@ update_all:
     ; bound check
     ; if(ball_pos.x < 0)
         left_bound:
-            ; ai score++
             cmp word [ball_pos], 0
             jg right_bound
                 ; mov word [ball_pos], 1
                 call reset_game
                 neg byte [ball_vel]
+                inc word [score + 2]    ; increase player score
                 jmp top_bound
                 
 
         ; else if(ball_pos.x > COLS)
         right_bound:
-            ; user score++
             cmp word [ball_pos], COLS
             jle top_bound
                 ; mov word [ball_pos], COLS
                 call reset_game
+                inc word [score]    ; increase ai score
                 neg byte [ball_vel]
 
         top_bound:
@@ -316,7 +352,7 @@ PAD_INITIAL_Y equ CENTER_Y - PAD_HEIGHT / 2
 ball_pos:       dw  CENTER_X,  CENTER_Y
 ball_vel:       db  1,  -1                              ; vx, vy
 pad_pos:        dw  PAD_INITIAL_Y, PAD_INITIAL_Y        ; AI_y   Player_y 
-score:          db  0                                   ; TODO : Later add score
+score:          dw  0, 0                                ; AI Score, Player Score
 gameOver:       db  0                                   ; TODO : Later
 
 
