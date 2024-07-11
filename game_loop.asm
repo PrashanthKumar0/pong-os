@@ -8,15 +8,18 @@
     FILL_BALL_CHAR      equ 0xD020    ; BG = Magenta  FG = BLACK  CHAR = space
     FILL_HEALTH_CHAR    equ 0xC020    ; BG = Red      FG = BLACK  CHAR = space
     
-    VRAM_SEG    equ 0xB800
-    CENTER_X    equ 40
-    CENTER_Y    equ 12
-    PAD_HEIGHT  equ 6
-    WIN_SCORE   equ 6
+    VRAM_SEG        equ 0xB800
+    CENTER_X        equ 40
+    CENTER_Y        equ 12
+    PAD_HEIGHT      equ 6
+    WIN_SCORE       equ 6
+    PAD_INITIAL_Y   equ CENTER_Y - PAD_HEIGHT / 2
 
     ; https://stanislavs.org/helppc/scan_codes.html
     KBD_UP      equ 0x48
     KBD_DOWN    equ 0x50
+
+
 ;-----------------------------------------------------------------------
 
 
@@ -367,7 +370,6 @@ delay:
 
 
 
-PAD_INITIAL_Y equ CENTER_Y - PAD_HEIGHT / 2
 
 ball_pos:       dw  CENTER_X,  CENTER_Y
 ball_vel:       db  1,  -1                              ; vx, vy
