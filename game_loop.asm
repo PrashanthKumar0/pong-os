@@ -74,9 +74,8 @@ handle_input:
     mov ah, 0x01
     int 16h             
     jz exit_handle_input0    ; if no key pressed
-    
-    cbw
-    int 16h
+
+
     ; output scancode is written in ah
 
     ;------------------------------------------
@@ -96,7 +95,6 @@ handle_input:
     ;------------------------------------------
 
 
-
     exit_handle_input0: 
     ; empty keyboard buffer
         mov ah, 0x01
@@ -113,7 +111,6 @@ handle_input:
 
 
 draw_all:
-    pusha
         ;------------------------------------------
         ; draw mid line
             mov ax, FILL_GRAPHIC_CHAR
@@ -187,7 +184,6 @@ draw_all:
 
         ; TODO : Win / LOSS?
 
-    popa
     ret
 
 
@@ -343,8 +339,9 @@ reset_game:
     mov word [ball_pos], CENTER_X
     mov word [ball_pos + 2], CENTER_Y
     
-    mov word [pad_pos], PAD_INITIAL_Y
-    mov word [pad_pos + 2], PAD_INITIAL_Y
+    ; disabled to save some memory
+    ; mov word [pad_pos], PAD_INITIAL_Y
+    ; mov word [pad_pos + 2], PAD_INITIAL_Y
 
     call clear_screen
     call draw_all
