@@ -57,7 +57,7 @@ game_loop:
 handle_input:
     mov ah, 0x01
     int 16h             
-    jz exit_handle_input    ; if no key pressed
+    jz exit_handle_input0    ; if no key pressed
     
     cbw
     int 16h
@@ -68,20 +68,30 @@ handle_input:
         cmp ah, KBD_UP                      ;
         jne handle_down_arrow               ;
             dec word [pad_pos + 2]          ; move player up
-            jmp exit_handle_input           ;
+            jmp exit_handle_input0          ;
     ;------------------------------------------
 
     ;------------------------------------------
     ; Down Arrow
         handle_down_arrow:                      ;
             cmp ah, KBD_DOWN                    ;
-                jne exit_handle_input           ;
+                jne exit_handle_input0          ;
                 inc word [pad_pos + 2]          ; move player up
     ;------------------------------------------
-             
 
 
-    exit_handle_input: ret
+
+    exit_handle_input0: 
+    ; empty keyboard buffer
+        mov ah, 0x01
+        int 16h
+        jz exit_handle_input
+            xor ah, ah         
+            int 16h
+            jmp exit_handle_input0
+
+    exit_handle_input: 
+    ret
 
 
 
@@ -304,7 +314,7 @@ delay:
 PAD_INITIAL_Y equ CENTER_Y - PAD_HEIGHT / 2
 
 ball_pos:       dw  CENTER_X,  CENTER_Y
-ball_vel:       db  1,  -1                               ; vx, vy
+ball_vel:       db  1,  -1                              ; vx, vy
 pad_pos:        dw  PAD_INITIAL_Y, PAD_INITIAL_Y        ; AI_y   Player_y 
 score:          db  0                                   ; TODO : Later add score
 gameOver:       db  0                                   ; TODO : Later
