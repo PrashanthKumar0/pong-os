@@ -28,7 +28,7 @@ jmp $       ; Hold on buddy there's hazard down there.
 
 ;-[ DATA ]-----------------------------------
 
-game_title: db "Jump-OS (pong)", 0x0
+game_title: db "Pong-OS (pong)", 0x0    ; unused though
 
 
 ;--------------------------------------------
