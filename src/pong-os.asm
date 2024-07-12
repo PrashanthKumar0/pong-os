@@ -6,9 +6,8 @@ mov sp, 0x8000
 mov bp, sp
 
 ;------------------------------------------------
-call delay
-call delay
-call delay
+
+
 call game_loop
 
 
