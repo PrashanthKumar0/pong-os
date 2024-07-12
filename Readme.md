@@ -19,7 +19,7 @@
 - `cd` into repo root
 - `nasm -i include -f bin ./src/pong-os.asm -o pong-os.bin`
 
-> [!INFO] 
+> [!NOTE]
 > If on windows and using qemu just run `run.bat` file
 
 ## Running It ⚙
