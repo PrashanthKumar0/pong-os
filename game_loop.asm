@@ -18,8 +18,6 @@
     ; https://stanislavs.org/helppc/scan_codes.html
     KBD_UP      equ 0x48
     KBD_DOWN    equ 0x50
-
-
 ;-----------------------------------------------------------------------
 
 
@@ -41,7 +39,7 @@ game_loop:
         ;------------------------------------
         ; check for game over
             mov cx, 2
-            mov bx, [score]
+            mov bx, word [score]
             check_score:
                 call update_game_over
                 add bx, 2
@@ -116,16 +114,13 @@ handle_input:
 draw_all:
         ;------------------------------------------
         ; draw mid line
-            mov ax, FILL_GRAPHIC_CHAR
-            mov di, CENTER_X * 2            ; since word = 2byte
+            mov bx, CENTER_X * 2            ; since word = 2byte
             mov cx, (CENTER_Y + 1)          ; makes no sense but approx (ROWS / 2) times
             _draw_mid_line_loop:
-                stosw
-                add di, ROW_STRIDE * 2 - 2
+                mov word [es:bx], FILL_GRAPHIC_CHAR
+                add bx, ROW_STRIDE * 2
                 loop _draw_mid_line_loop
         ;------------------------------------------
-
-
 
         ;------------------------------------------
         ; draw ball
@@ -137,15 +132,14 @@ draw_all:
             mov word [es:di], FILL_BALL_CHAR    ; move to vram
         ;------------------------------------------
         
-
+        ; draw paddles
         ;------------------------------------------
         ; draw ai
             mov di, [pad_pos]    
             imul di, ROW_STRIDE
             call draw_paddle
         ;------------------------------------------
-
-
+        ;
         ;------------------------------------------
         ; draw player
             mov di, [pad_pos + 2]
@@ -155,32 +149,22 @@ draw_all:
         ;------------------------------------------
 
 
+        ; draw scores
         ;------------------------------------------
-        ; draw score
-
-            ; TODO :  MOVE THIS IN FUNCTION
-
-
-            ;------------------------------------------
-            ; ENEMY SCORE
-
-                mov cx, word [score]
-                mov di, COLS - 10
-                mov ax, -8              ; direction
-                call draw_score
-
-            ;------------------------------------------
-
-            
-            ;------------------------------------------
-            ; PLAYER SCORE
-                mov cx, word [score + 2]
-                mov di, COLS + 10
-                mov ax, +8          ; direction
-                call draw_score 
- 
-            ;------------------------------------------            
+        ; ENEMY SCORE
+            mov cx, word [score]
+            mov di, COLS - 10
+            mov ax, -8              ; direction
+            call draw_score
         ;------------------------------------------
+        ;
+        ;------------------------------------------
+        ; PLAYER SCORE
+            mov cx, word [score + 2]
+            mov di, COLS + 10
+            mov ax, +8          ; direction
+            call draw_score 
+        ;------------------------------------------            
 
 
 
@@ -196,8 +180,8 @@ draw_all:
 
 
 draw_score:
-    cmp cx, 0
-    je end_draw_score
+        cmp cx, 0
+        je end_draw_score
     draw_score_loop:
         mov word [es:di], FILL_HEALTH_CHAR
         add di, ax
