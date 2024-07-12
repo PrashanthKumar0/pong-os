@@ -1,5 +1,7 @@
 # Pong-Os 🏓
 
+![screenshot](github/imgs/Screenshot.png)
+
 > [!WARNING]
 > Its not any os or even a kernel.
 > Its just a bootsector program.
