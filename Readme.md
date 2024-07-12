@@ -2,7 +2,7 @@
 
 ![screenshot](github/imgs/Screenshot.png)
 
-> [!WARNING]
+> [!IMPORTANT]
 > Its not any os or even a kernel.
 > Its just a bootsector program.
 > I was learning to make operating system but then
@@ -12,6 +12,10 @@
 > Also Game Over screen is missing as i exceeded 512bytes limit 😁
 > For now it just goes into infinite loop and freezes after enemy scores `WIN_SCORE` defined in `include/CONSTANTS.asm`
 
+> [!NOTE]
+> I've tried to keep source code readable so try once
+> You may find an inspiration to start assembly 😀 
+> (its really fun believe me | apart from a lot of searching on internet)
 
 ## Dependencies 
 - nasm assembler
