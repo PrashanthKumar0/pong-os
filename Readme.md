@@ -15,12 +15,16 @@
 
 
 ## Building Instruction ⚒
-- `nasm -f bin pong-os.asm`
+
+- `cd` into repo root
+- `nasm -i include -f bin ./src/pong-os.asm -o pong-os.bin`
+
+> [!INFO] If on windows and using qemu just run `run.bat` file
 
 ## Running It ⚙
 
 - Qemu users 
-    - `qemu-system-x86_64.exe -full-screen ./pong-os`
+    - `qemu-system-x86_64.exe -full-screen ./pong-os.bin`
 - Others
     - run it using your emulator / vm (you have to lead or burn generated binary to harddisk / virtual disk image)
     
