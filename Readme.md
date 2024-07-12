@@ -8,6 +8,8 @@
 > then i thought about making a simple classical game like snake thinking about complexity to fit it in just 512 bytes i though to make a classical pong game clone.
 > I havnt tested it on real hardware so dont cry to me if something goes wrong if you took the risk :D
 > Also Game Over screen is missing as i exceeded 512bytes limit 😁
+> For now it just goes into infinite loop and freezes after enemy scores `WIN_SCORE` defined in `include/CONSTANTS.asm`
+
 
 ## Dependencies 
 - nasm assembler
